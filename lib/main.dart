@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:helloworld/components/chart.dart';
 import 'package:helloworld/components/transaction_form.dart';
 import 'package:helloworld/components/transaction_list.dart';
 import 'package:helloworld/transaction.dart';
@@ -17,7 +18,7 @@ class ExpensesApp extends StatelessWidget {
       home: MyHomePage(),
       theme: tema.copyWith(
         colorScheme: tema.colorScheme.copyWith(
-          primary: Colors.black45,
+          primary: Colors.teal,
           secondary: Colors.orange,
         ),
         textTheme: tema.textTheme.copyWith(
@@ -49,26 +50,31 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final List<Transaction> _transactions = [
-    // Transaction(id: 't1', title: "A thing", value: 50.00, date: DateTime.now()),
-    // Transaction(
-    //     id: 't2', title: "Other thing", value: 150.00, date: DateTime.now()),
-    // Transaction(
-    //     id: 't3', title: "Another thing", value: 350.00, date: DateTime.now()),
-    // Transaction(
-    //     id: 't3', title: "Another thing", value: 350.00, date: DateTime.now()),
-    // Transaction(
-    //     id: 't3', title: "Another thing", value: 350.00, date: DateTime.now()),
-    // Transaction(
-    //     id: 't3', title: "Another thing", value: 350.00, date: DateTime.now()),
-    // Transaction(
-    //     id: 't3', title: "Another thing", value: 350.00, date: DateTime.now()),
-    // Transaction(
-    //     id: 't3', title: "Another thing", value: 350.00, date: DateTime.now()),
-    // Transaction(
-    //     id: 't3', title: "Another thing", value: 350.00, date: DateTime.now()),
-    // Transaction(
-    //     id: 't3', title: "Another thing", value: 350.00, date: DateTime.now()),
+    Transaction(
+        id: 't1',
+        title: "A thing",
+        value: 50.00,
+        date: DateTime.now().subtract(Duration(days: 3))),
+    Transaction(
+        id: 't2',
+        title: "Other thing",
+        value: 150.00,
+        date: DateTime.now().subtract(Duration(days: 4))),
+    Transaction(
+        id: 't3',
+        title: "Another thing",
+        value: 350.00,
+        date: DateTime.now().subtract(Duration(days: 40))),
+    Transaction(
+        id: 't4', title: "Another thing", value: 30.00, date: DateTime.now()),
   ];
+
+  List<Transaction> get _recentTransactions {
+    return _transactions
+        .where((transaction) => transaction.date
+            .isAfter(DateTime.now().subtract(Duration(days: 7))))
+        .toList();
+  }
 
   _openTransactionFormModal(BuildContext context) {
     showModalBottomSheet(
@@ -111,10 +117,7 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const SizedBox(
-              child: Card(
-                  color: Colors.blue, elevation: 5, child: Text("Gráfico")),
-            ),
+            Chart(_recentTransactions),
             TransactionList(_transactions),
           ],
         ),
