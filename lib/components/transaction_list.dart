@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:helloworld/transaction.dart';
 import 'package:intl/intl.dart';
 
 class TransactionList extends StatelessWidget {
   final List<Transaction> transactions;
+  final Function(String) onRemove;
 
   // ignore: use_key_in_widget_constructors
-  const TransactionList(this.transactions);
+  const TransactionList(this.transactions, this.onRemove);
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 300,
+    return Container(
+      height: 400,
       child: transactions.isEmpty
           ? Column(children: [
               SizedBox(height: 20),
@@ -35,35 +34,32 @@ class TransactionList extends StatelessWidget {
               itemBuilder: (ctx, index) {
                 final transaction = transactions[index];
                 return Card(
-                    child: Row(children: [
-                  Container(
-                    margin: const EdgeInsets.symmetric(
-                        horizontal: 15, vertical: 10),
-                    decoration: BoxDecoration(
-                        border: Border.all(color: Colors.red, width: 2)),
-                    padding: const EdgeInsets.all(10),
-                    child: Text(
-                      "R\$ ${transaction.value.toStringAsFixed(2)}",
-                      style: const TextStyle(
-                          color: Colors.red,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold),
+                  elevation: 3,
+                  margin:
+                      const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
+                  child: ListTile(
+                    leading: CircleAvatar(
+                        backgroundColor: Theme.of(context).colorScheme.primary,
+                        child: Padding(
+                          padding: const EdgeInsets.all(5),
+                          child:
+                              FittedBox(child: Text('R\$${transaction.value}')),
+                        )),
+                    title: Text(
+                      transaction.title,
+                      style: Theme.of(context).textTheme.headline6,
+                    ),
+                    subtitle:
+                        Text(DateFormat('d MMM y').format(transaction.date)),
+                    trailing: IconButton(
+                      icon: Icon(Icons.delete),
+                      color: Theme.of(context).colorScheme.error,
+                      onPressed: () {
+                        onRemove(transaction.id);
+                      },
                     ),
                   ),
-                  Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          transaction.title,
-                          style: const TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
-                        ),
-                        Text(
-                          DateFormat('d MMM y').format(transaction.date),
-                          style: TextStyle(color: Colors.grey[500]),
-                        )
-                      ])
-                ]));
+                );
               }),
     );
   }

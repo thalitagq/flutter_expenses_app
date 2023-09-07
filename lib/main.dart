@@ -23,11 +23,11 @@ class ExpensesApp extends StatelessWidget {
         ),
         textTheme: tema.textTheme.copyWith(
           // ignore: deprecated_member_use
-          headline6: const TextStyle(
+          headline6: TextStyle(
             fontFamily: 'OpenSans',
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: Colors.black,
+            color: Colors.grey.shade700,
           ),
         ),
         appBarTheme: AppBarTheme(
@@ -49,25 +49,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final List<Transaction> _transactions = [
-    Transaction(
-        id: 't1',
-        title: "A thing",
-        value: 50.00,
-        date: DateTime.now().subtract(Duration(days: 3))),
-    Transaction(
-        id: 't2',
-        title: "Other thing",
-        value: 150.00,
-        date: DateTime.now().subtract(Duration(days: 4))),
-    Transaction(
-        id: 't3',
-        title: "Another thing",
-        value: 350.00,
-        date: DateTime.now().subtract(Duration(days: 40))),
-    Transaction(
-        id: 't4', title: "Another thing", value: 30.00, date: DateTime.now()),
-  ];
+  final List<Transaction> _transactions = [];
 
   List<Transaction> get _recentTransactions {
     return _transactions
@@ -84,18 +66,24 @@ class _MyHomePageState extends State<MyHomePage> {
         });
   }
 
-  _addTransaction(String title, double value) {
+  _addTransaction(String title, double value, DateTime date) {
     final newTransaction = Transaction(
         id: Random().nextDouble().toString(),
         title: title,
         value: value,
-        date: DateTime.now());
+        date: date);
 
     setState(() {
       _transactions.add(newTransaction);
     });
 
     Navigator.of(context).pop();
+  }
+
+  _deleteTransaction(String id) {
+    setState(() {
+      _transactions.removeWhere((transaction) => transaction.id == id);
+    });
   }
 
   @override
@@ -109,16 +97,15 @@ class _MyHomePageState extends State<MyHomePage> {
         actions: [
           IconButton(
               onPressed: () => _openTransactionFormModal(context),
-              icon: Icon(Icons.add))
+              icon: const Icon(Icons.add))
         ],
       ),
       body: SingleChildScrollView(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Chart(_recentTransactions),
-            TransactionList(_transactions),
+            TransactionList(_transactions, _deleteTransaction),
           ],
         ),
       ),
